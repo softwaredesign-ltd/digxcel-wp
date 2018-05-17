@@ -16,7 +16,7 @@ if ( ! class_exists( 'DigxcelMenu' ) ) {
     }
 
     function digxcel_setup_menu() {
-        add_menu_page('DigXcel Configuration', 'DigXcel', 'manage_options', 'digxcel', array($this,'digxcel_settings'));
+        add_menu_page('digXcel Configuration', 'digXcel', 'manage_options', 'digxcel', array($this,'digxcel_settings'));
     }
 
     function digxcel_settings() {
@@ -29,7 +29,7 @@ if ( ! class_exists( 'DigxcelMenu' ) ) {
             ?>
             <table style="text-align: left;">
                 <tr>
-                    <th>Digxcel API Key</th>
+                    <th>API Key</th>
                     <td><input type="password" name="digxcel_key" value="<?php echo esc_attr( get_option('digxcel_key') ); ?>" size="50" /></td>
                 </tr>
                 <tr>

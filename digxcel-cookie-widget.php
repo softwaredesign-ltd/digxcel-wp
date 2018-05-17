@@ -38,7 +38,7 @@ if ( ! class_exists( 'DigxcelCookieWidget' ) ) {
     }
 
     public function digxcel_insert_widget_script() {
-      wp_enqueue_script( 'digxcel-cookie-widget', plugins_url( 'digxcel-wp-plugin/assets/js/digxcel-cookie-widget.js' , dirname(__FILE__) ) );
+      wp_enqueue_script( 'digxcel-cookie-widget', plugins_url( 'digxcel/assets/js/digxcel-cookie-widget.js' , dirname(__FILE__) ) );
     }
 
     public function digxcel_toggle_http_cookies() {
