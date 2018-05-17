@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: digXcel
+Plugin Name: GDPR - WP Plugin
 Plugin URI: http://digxcel.com/
 Description: Promoting digital excellence
-Author: Software Design
-Author URI: http://softwaredesign.ie/
+Author: digXcel
+Author URI: https://digxcel.com/
 Version: 1
 */
 
