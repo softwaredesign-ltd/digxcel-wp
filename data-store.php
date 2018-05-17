@@ -13,10 +13,13 @@ if ( ! class_exists( 'DigxcelDataStore' ) ) {
       }
 
       // Core dataStore
-      $defaultDataStore = array("name"=>"Default", "id"=>"default");
-      array_push($data, $defaultDataStore);
+      array_push($data, "default");
 
-      return array( 'data' => $data );
+      $dataStores = array();
+      foreach ($data as &$dataStore) {
+        array_push($dataStores, array("name"=>$dataStore, "id"=>$dataStore));
+      }
+      return array( 'data' => $dataStores );
     }
 
   }
