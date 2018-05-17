@@ -19,11 +19,13 @@ if ( ! class_exists( 'DigxcelAccessRequest' ) ) {
       }
 
       $subjectData = array();
-      foreach ($dataFilePaths as $dataFilePath) {
-        if( file_exists($dataFilePath) ){
-          array_push($subjectData, $this->digxcel_get_subject_data_from_file($dataFilePath));
-          unlink($dataFilePath);
-        }
+      if ($dataFilePaths) {
+        foreach ($dataFilePaths as $dataFilePath) {
+          if( file_exists($dataFilePath) ){
+            array_push($subjectData, $this->digxcel_get_subject_data_from_file($dataFilePath));
+            unlink($dataFilePath);
+          }
+        }        
       }
 
       if( empty($subjectData) )
