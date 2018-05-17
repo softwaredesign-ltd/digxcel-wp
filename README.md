@@ -34,16 +34,67 @@ The plugin exposes 4 REST endpoints:
 
   Sample Response:
     ```
-    {
-      data: [
-        "john@digxcel.com",
-        "joe@digxcel.com",
-        "jane@digxcel.com",
-        "jill@digxcel.com"
-      ]
-    }
+    data: [
+      {
+        email: "john@digxcel.com",
+        data: [
+          {
+            name: "first_name",
+            category: 'personal'
+            value: "John",
+            rectifiable: true
+          },
+          {
+            name: "last_name",
+            category: 'personal'
+            value: "Smith",
+            rectifiable: true
+          },
+          {
+            name: "email",
+            category: 'personal'
+            value: "john@digxcel.com",
+            rectifiable: false
+          },
+          {
+            name: "bio",
+            category: 'personal'
+            value: "My bio",
+            rectifiable: true
+          }
+        ]
+      },
+      {
+        email: "jane@digxcel.com",
+        data: [
+          {
+            name: "first_name",
+            category: 'personal'
+            value: "Jane",
+            rectifiable: true
+          },
+          {
+            name: "last_name",
+            category: 'personal'
+            value: "Smith",
+            rectifiable: true
+          },
+          {
+            name: "email",
+            category: 'personal'
+            value: "jane@digxcel.com",
+            rectifiable: false
+          },
+          {
+            name: "bio",
+            category: 'personal'
+            value: "My bio",
+            rectifiable: true
+          }
+        ]
+      },
+    ]
     ```
-
 
 ##### 3. accessRequest - retrieves a list of base64 encoded strings representing the data subject's stored data
 
@@ -110,19 +161,51 @@ Sample Implementation:
 
 To return data subjects for your custom data stores you will need to implement a filter which is subscribed to the
 `digxcel_get_data_subjects` event.
-Your filter will receive an array and a data store id, you just need to push the names of
-your data subjects into that array if the data store id parameter matches your data store.
+Your filter will receive an array and a data store id, you just need to push the data subject data
+into that array if the data store id parameter matches your data store.
 
 Sample Implementation:
 ```
-  function get_my_data_subjects($data, $dataStoreId) {
-    if( $dataStoreId == "this_data_store") {
-      array_push($data, "joe@digxcel.com");
-      array_push($data, "jill@digxcel.com");      
+  function get_my_data_subjects_ds1($data, $dataStoreId) {
+    if( $dataStoreId == "dataStore1") {
+
+      $johnsData = array();
+      $johnsData['email'] = 'john@digxcel.com';
+      $johnsData['data'] = array();
+
+      array_push($johnsData['data'], array(
+        'name' => 'first_name',
+        'category' => 'personal', // OPTIONS: 'personal', 'sensitive'
+        'value' => 'John',
+        'rectifiable' => true
+      ));
+
+      array_push($johnsData['data'], array(
+        'name' => 'last_name',
+        'category' => 'personal', // OPTIONS: 'personal', 'sensitive'
+        'value' => 'Smith',
+        'rectifiable' => true
+      ));
+
+      array_push($johnsData['data'], array(
+        'name' => 'email',
+        'category' => 'personal', // OPTIONS: 'personal', 'sensitive'
+        'value' => 'john@digxcel.com',
+        'rectifiable' => false
+      ));
+
+      array_push($johnsData['data'], array(
+        'name' => 'bio',
+        'category' => 'personal', // OPTIONS: 'personal', 'sensitive'
+        'value' => 'My bio',
+        'rectifiable' => true
+      ));
+
+      array_push($data, $johnsData);
     }
     return $data;
   }
-  add_filter( 'digxcel_get_data_subjects', 'get_my_data_subjects', 2, 2);
+  add_filter( 'digxcel_get_data_subjects', 'get_my_data_subjects_ds1', 2, 2);
 ```
 
 

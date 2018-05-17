@@ -1,25 +1,22 @@
 
 const cookieEntry = "<id>=<value>; expires=<expires>; domain=<domain>;";
-let iframeSource = "http://app.<orgId>.digxcel.com:4200/cookie-consent?dpsId=<dpsId>";
 const iframeId = "digxcel-modal";
 const bannerId = "digxcel-banner";
 const overlayId = "digxcel-overlay";
 const bannerDismissedCookie = "digxcel-banner-dismissed";
-let orgId = null;
 let dpsId = null;
 let modalReady = false;
 
 window.onload = function() {
-  var widgetKey = document.getElementById("digxcelConfig").getAttribute("key").split("-");
-  orgId = widgetKey[0];
-  dpsId = widgetKey[1];
+  const iframeSource = document.getElementById("digxcelConfig").getAttribute("url");
+  dpsId = iframeSource.split("?dpsId=")[1];
 
   if(getCookie(bannerDismissedCookie) === "true")
     return null;
 
   var iframe = document.createElement('iframe');
   iframe.id = iframeId;
-  iframe.src = iframeSource.replace("<orgId>", orgId).replace("<dpsId>", dpsId);
+  iframe.src = iframeSource;
   iframe.style = "z-index: 1001; position: fixed; top: -100%; opacity: 0; max-height: 550px;";
   document.body.appendChild(iframe);
 
