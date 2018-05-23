@@ -34,7 +34,7 @@ if ( ! class_exists( 'DigxcelCookieWidget' ) ) {
     }
 
     public function digxcel_insert_widget_config() {
-      echo '<div id="digxcelConfig" key="' . get_option('digxcel_cookie_widget_key') . '"></div>';
+      echo '<div id="digxcelConfig" url="' . get_option('digxcel_cookie_widget_key') . '"></div>';
     }
 
     public function digxcel_insert_widget_script() {
