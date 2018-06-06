@@ -19,14 +19,14 @@ if ( ! class_exists( 'DigxcelCookieWidget' ) ) {
         add_action('wp_footer', array( $this, 'digxcel_toggle_http_cookies' ));
 
         // Toggle third party cookies
-        add_filter('final_output', array( $this, 'digxcel_toggle_cookies' ));
+        add_filter('final_output', array( $this, 'digxcel_toggle_scripts' ));
       }
     }
 
     private function digxcel_get_blocked_cookies() {
       if( array_key_exists('digxcel-consents', $_COOKIE) ) {
         foreach(json_decode(stripslashes($_COOKIE['digxcel-consents']), true) as $key=>$value) {
-          if ($value['accepted'] == false) {
+          if ($value['accepted'] === false) {
             array_push($this->blocked_cookies, $value);
           }
         }
@@ -50,17 +50,19 @@ if ( ! class_exists( 'DigxcelCookieWidget' ) ) {
 
     private function digxcel_node_blocked($node_identifier) {
       foreach($this->blocked_cookies as $key => $what) {
-        if( strpos($node_identifier, $what['domain']) !== false ){
-          return true;
-        }
-        if( strpos($node_identifier, $what['source']) !== false ){
-          return true;
+        if($what['thirdParty']) {
+          if( strpos($node_identifier, $what['domain']) !== false ){
+            return true;
+          }
+          if( $what['source'] !== NULL && strpos($node_identifier, $what['source']) !== false ){
+            return true;
+          }
         }
       }
       return false;
     }
 
-    public function digxcel_toggle_cookies($dom) {
+    public function digxcel_toggle_scripts($dom) {
 
       if(strpos($dom, '<html') === false) {
         return $dom;
@@ -81,20 +83,20 @@ if ( ! class_exists( 'DigxcelCookieWidget' ) ) {
       // Block scripts
       foreach($doc->getElementsByTagName('script') as $script) {
         // Remove node if src matches
-        if ($this->node_blocked($script->getAttribute('src')) !== false) {
+        if ($this->digxcel_node_blocked($script->getAttribute('src')) === true) {
           array_push($domElemsToRemove, $script);
           continue;
         }
 
         // Remove node if contents match
-        if ($script->nodeValue && ($this->node_blocked($script->nodeValue) !== false)){
+        if ($script->nodeValue && ($this->digxcel_node_blocked($script->nodeValue) === true)){
           array_push($domElemsToRemove, $script);
         }
       }
 
       // Block iFrames
       foreach($doc->getElementsByTagName('iframe') as $iframe) {
-        if ($this->node_blocked($iframe->getAttribute('src')) !== false) {
+        if ($this->digxcel_node_blocked($iframe->getAttribute('src')) === true) {
           array_push($domElemsToRemove, $iframe);
         }
       }

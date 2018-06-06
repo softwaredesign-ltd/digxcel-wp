@@ -7,7 +7,6 @@ Author: digXcel
 Author URI: https://digxcel.com/
 Version: 1
 */
-
 require_once (dirname(__FILE__).'/data-subject.php');
 require_once (dirname(__FILE__).'/data-store.php');
 require_once (dirname(__FILE__).'/access-request.php');
@@ -20,6 +19,7 @@ if ( !class_exists('DigXcel') ) {
   class DigXcel{
 
     public function __construct() {
+      $this->version = 1;
       $this->dataSubject = new DigxcelDataSubject();
       $this->dataStore = new DigxcelDataStore();
       $this->accessRequest = new DigxcelAccessRequest();
@@ -27,6 +27,16 @@ if ( !class_exists('DigXcel') ) {
       $this->digxcelMenu = new DigxcelMenu();
       $this->digxcelMenu->digxcel_create_menu();
       $this->digxcelCookieWidget = new DigxcelCookieWidget();
+    }
+
+    public function digxcel_register_base_routes(){
+      // GET /wp-json/digxcel/version
+      add_action( 'rest_api_init', function () {
+        register_rest_route( 'digxcel', 'version', array(
+          'methods' => 'GET',
+          'callback' => array($this, 'get_version')
+        ) );
+      } );
     }
 
     public function digxcel_register_routes_v1(){
@@ -68,6 +78,10 @@ if ( !class_exists('DigXcel') ) {
       } );
     }
 
+    public function get_version($request){
+      return $this->version;
+    }
+
     public function digxcel_verify_api_key($request){
       $parameters = $request->get_params();
 
@@ -89,6 +103,7 @@ if ( !class_exists('DigXcel') ) {
 
 if ( class_exists( 'DigXcel' ) ) {
   $digXcel = new DigXcel();
+  $digXcel->digxcel_register_base_routes();
   $digXcel->digxcel_register_routes_v1();
 }
 
