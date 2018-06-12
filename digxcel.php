@@ -88,7 +88,7 @@ if ( !class_exists('DigXcel') ) {
       if( !array_key_exists('key', $parameters) )
         return false;
 
-      $keyParameter = $parameters['key'];
+      $keyParameter = hash('sha256', $parameters['key']);
 
       $pluginKey = get_option('digxcel_key');
 
