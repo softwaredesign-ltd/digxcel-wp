@@ -125,13 +125,58 @@ The plugin exposes 4 REST endpoints:
     ```  
 
 
+##### 5. profileRequest - returns information about any profiling used for the dataStore's dataSubjects
+
+  Sample Request:
+    GET `/wp-json/digxcel/v1/profileRequest?dataStoreId=default&key=30f26f8e-5937-4795-ac57-01fd4d964c52`
+
+  Sample Response:
+    ```
+    {
+      data: [
+        {
+          category: "general",
+          description: "This is the standard category for users"
+        }
+      ]
+    }
+    ```  
+
+
+##### 6. automatedDecisionsRequest - returns information about any automated decisions taken regarding the dataStore's dataSubjects
+
+  Sample Request:
+    GET `/wp-json/digxcel/v1/automatedDecisionsRequest?dataStoreId=default&key=30f26f8e-5937-4795-ac57-01fd4d964c52`
+
+  Sample Response:
+    ```
+    {
+      data: [
+        {
+          dataSubjectId: "joe@digxcel.com",
+          data: "Account balance",
+          date: "11.06.2018",
+          decision: "denied"
+        },
+        {
+          dataSubjectId: "jane@digxcel.com",
+          data: "Account balance",
+          date: "12.06.2018",
+          decision: "approved"
+        }
+      ]
+    }
+    ```  
+
+
 ### Default Implementation
 
 * getDataStores - returns a single datastore called 'default'
 * getDataSubjects - for data store 'default' returns list of data subjects stored in the Wordpress 'users' table
 * accessRequest - retrieves all data stored about a data subject in the Wordpress 'users' table
 * deleteRequest - deletes the entry from the Wordpress 'users' table
-
+* profileRequest - returns a default general profile for all users
+* automatedDecisionsRequest - returns empty list
 
 
 ### 3rd Party Implementation
@@ -266,4 +311,62 @@ Sample Implementation:
     return $response;
   }
   add_filter( 'digxcel_delete_request', 'delete_data_subject_data', 2, 3);
+```
+
+
+##### 5. profileRequest
+
+To retrieve the profiling information associated with your custom data store you will need to implement a filter which is subscribed to the
+`digxcel_profile_request` event.
+Your filter will receive an array and a data store id.
+You will need to append any data subject profiles to that array that are used by your data store.
+
+
+Sample Implementation:
+```
+  function get_profile_information_ds1($profiles, $dataStoreId) {
+    if( $dataStoreId == "dataStore1") {
+      array_push($profiles, array(
+        'category' => 'general',
+        'description' => 'This is the standard category for users',
+      ));
+      array_push($profiles, array(
+        'category' => 'other',
+        'description' => 'This is another category for users',
+      ));
+    }
+    return $profiles;
+  }
+  add_filter( 'digxcel_profile_request', 'get_profile_information_ds1', 2, 2);
+```
+
+
+##### 6. automatedDecisionsRequest
+
+To retrieve the automated decisions information associated with your custom data store you will need to implement a filter which is subscribed to the
+`digxcel_automated_decisions_request` event.
+Your filter will receive an array and a data store id.
+You will need to append any automated decision information to that array for decisions made regarding data subjects in your data store.
+
+
+Sample Implementation:
+```
+  function get_decisions_ds1($decisions, $dataStoreId) {
+    if( $dataStoreId == "dataStore1") {
+      array_push($decisions, array(
+        'dataSubjectId' => 'joe@digxcel.com',
+        'data' => 'Account balance',
+        'date' => '11.06.2018',
+        'decision' => 'denied',
+      ));
+      array_push($decisions, array(
+        'dataSubjectId' => 'jane@digxcel.com',
+        'data' => 'Account balance',
+        'date' => '12.06.2018',
+        'decision' => 'approved',
+      ));
+    }
+    return $decisions;
+  }
+  add_filter( 'digxcel_automated_decisions_request', 'get_decisions_ds1', 2, 2);
 ```
