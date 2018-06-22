@@ -4,11 +4,19 @@ if ( ! class_exists( 'DigxcelMenu' ) ) {
   class DigxcelMenu{
 
     public function __construct() {
+
       add_action( 'admin_init', function() {
         register_setting( 'digxcel-settings', 'digxcel_key' );
         register_setting( 'digxcel-settings', 'digxcel_cookie_widget_key' );
         register_setting( 'digxcel-settings', 'digxcel_cookie_widget_enabled' );
       });
+
+      // Hash the API key before storing
+      add_action( 'init', function() {
+        add_filter( 'pre_update_option_digxcel_key', function($new_value, $old_value) {
+          return hash('sha256', $new_value);
+        }, 10, 2 );
+      } );
     }
 
     public function digxcel_create_menu() {
