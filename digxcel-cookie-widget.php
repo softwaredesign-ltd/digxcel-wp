@@ -1,4 +1,5 @@
 <?php
+
 if ( ! class_exists( 'DigxcelCookieWidget' ) ) {
 
   class DigxcelCookieWidget{
@@ -38,7 +39,7 @@ if ( ! class_exists( 'DigxcelCookieWidget' ) ) {
     }
 
     public function digxcel_insert_widget_script() {
-      wp_enqueue_script( 'digxcel-cookie-widget', plugins_url( 'digxcel/assets/js/digxcel-cookie-widget.js' , dirname(__FILE__) ) );
+      wp_enqueue_script( 'digxcel-cookie-widget', plugins_url( 'digxcel/assets/js/digxcel-cookie-widget.js' , dirname(__FILE__) ), array(), date("h:i:s") );
     }
 
     public function digxcel_toggle_http_cookies() {
@@ -50,13 +51,11 @@ if ( ! class_exists( 'DigxcelCookieWidget' ) ) {
 
     private function digxcel_node_blocked($node_identifier) {
       foreach($this->blocked_cookies as $key => $what) {
-        if($what['thirdParty']) {
-          if( strpos($node_identifier, $what['domain']) !== false ){
-            return true;
-          }
-          if( $what['source'] !== NULL && strpos($node_identifier, $what['source']) !== false ){
-            return true;
-          }
+        if( $what['thirdParty'] === true && strpos($node_identifier, $what['domain']) !== false ) {
+          return true;
+        }
+        if( $what['source'] !== NULL && strpos($node_identifier, $what['source']) !== false ){
+          return true;
         }
       }
       return false;
