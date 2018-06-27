@@ -1,5 +1,4 @@
 
-const cookieEntry = "<id>=<value>; expires=<expires>; domain=<domain>;";
 const iframeId = "digxcel-modal";
 const bannerId = "digxcel-banner";
 const overlayId = "digxcel-overlay";
@@ -28,9 +27,9 @@ window.onload = function() {
 
   var banner = document.createElement('div');
   banner.innerHTML = `
-    <div style="position: fixed; bottom: 0px; left: 0px; right: 0px; height: 120px; background-color: rgb(0, 0, 0); opacity: 0.8;"></div>
-    <div style="position: fixed; bottom: 40px; right: 50px; color: rgb(221, 221, 221);">
-      <span><h3>This site uses Cookies to improve your experience</h3></span>
+    <div style="position: fixed; bottom: 0px; left: 0px; right: 0px; height: 100px; background-color: rgb(0, 0, 0); opacity: 0.8;"></div>
+    <div style="position: fixed; bottom: 16px; right: 50px; color: rgb(221, 221, 221);">
+      <span><h4 style="color: #ffffff; margin-bottom: 13px; margin-right: 9px;">This site uses Cookies to improve your experience</h4></span>
       <span style="float: right;">
         <a style="margin-right: 10px;" href="#" onclick="toggleIframe()">Cookie Settings</a>
         <a style="margin-right: 10px;" href="#" onclick="toggleBanner()">Dismiss</a>
@@ -78,8 +77,10 @@ function toggleById(elementId) {
   document.getElementById(elementId).style.display = elementDisplay == 'block' ? 'none' : 'block';
 }
 
-function blockCookie(cookieName) {
-  storeCookie(cookieName, "expired", "Sat, 01-Jan-2000 00:00:00 GMT", "." + window.location.hostname);
+function blockCookie(cookie) {
+  expireCookie(cookie.name, "expired", "Sat, 01-Jan-2000 00:00:00 GMT", cookie.domain, cookie.path);
+  expireCookie(cookie.name, "expired", "Sat, 01-Jan-2000 00:00:00 GMT", cookie.domain, '.' + cookie.path);
+  expireCookie(cookie.name, "expired", "Sat, 01-Jan-2000 00:00:00 GMT", cookie.domain, '/' + window.location.pathname.split('/').join(''));
 }
 
 function getCookie(cookieName) {
@@ -88,26 +89,25 @@ function getCookie(cookieName) {
   if (parts.length == 2) return parts.pop().split(";").shift();
 }
 
-function storeCookie(id, value, expires, domain) {
-  document.cookie = cookieEntry.replace(
-    "<id>", id
-  ).replace(
-    "<value>", value
-  ).replace(
-    "<expires>", expires
-  ).replace(
-    "<domain>", domain
-  );
+function expireCookie(id, value, expires, domain, path) {
+  document.cookie = `${id}=${value}; expires=${expires}; domain=${domain}; path=${path}`;
+  document.cookie = `${id}=${value}; expires=${expires}; domain=${domain};`;
+  document.cookie = `${id}=${value}; expires=${expires};`;
+}
+
+function storeCookie(id, value, expires, domain, path) {
+  if( domain && path ){
+    document.cookie = `${id}=${value}; expires=${expires}; domain=${domain}; path=${path}`;
+  } else if ( domain ) {
+    document.cookie = `${id}=${value}; expires=${expires}; domain=${domain};`;
+  } else {
+    document.cookie = `${id}=${value}; expires=${expires};`;
+  }
 }
 
 function syncConsents(consentCookieId, consents) {
   if( consentCookieId.indexOf(dpsId) != -1 ){
-    storeCookie(
-      "digxcel-consents",
-      consents,
-      "Sat, 01-Jan-2050 00:00:00 GMT",
-      window.location.hostname
-    );
+    storeCookie("digxcel-consents", consents, "Sat, 01-Jan-2050 00:00:00 GMT", window.location.hostname, "/");
   }
 }
 

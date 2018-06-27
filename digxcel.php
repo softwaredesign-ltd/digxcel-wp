@@ -13,6 +13,8 @@ require_once (dirname(__FILE__).'/access-request.php');
 require_once (dirname(__FILE__).'/delete-request.php');
 require_once (dirname(__FILE__).'/digxcel-menu.php');
 require_once (dirname(__FILE__).'/digxcel-cookie-widget.php');
+require_once (dirname(__FILE__).'/profiling-request.php');
+require_once (dirname(__FILE__).'/automated-decisions-request.php');
 
 if ( !class_exists('DigXcel') ) {
 
@@ -27,6 +29,8 @@ if ( !class_exists('DigXcel') ) {
       $this->digxcelMenu = new DigxcelMenu();
       $this->digxcelMenu->digxcel_create_menu();
       $this->digxcelCookieWidget = new DigxcelCookieWidget();
+      $this->profileRequest = new DigxcelProfilingRequest();
+      $this->automatedDecisionsRequest = new DigxcelAutomatedDecisionsRequest();
     }
 
     public function digxcel_register_base_routes(){
@@ -76,6 +80,24 @@ if ( !class_exists('DigXcel') ) {
           'permission_callback' => array($this, 'digxcel_verify_api_key')
         ) );
       } );
+
+      // Eg: GET /wp-json/digxcel/v1/profileRequest?dataStoreId=default&key=1234
+      add_action( 'rest_api_init', function () {
+        register_rest_route( 'digxcel/v1', 'profileRequest', array(
+          'methods' => 'GET',
+          'callback' => array($this->profileRequest, 'digxcel_profile_request'),
+          'permission_callback' => array($this, 'digxcel_verify_api_key')
+        ) );
+      } );
+
+      // Eg: GET /wp-json/digxcel/v1/automatedDecisionsRequest?dataStoreId=default&key=1234
+      add_action( 'rest_api_init', function () {
+        register_rest_route( 'digxcel/v1', 'automatedDecisionsRequest', array(
+          'methods' => 'GET',
+          'callback' => array($this->automatedDecisionsRequest, 'digxcel_automated_decisions_request'),
+          'permission_callback' => array($this, 'digxcel_verify_api_key')
+        ) );
+      } );
     }
 
     public function get_version($request){
@@ -88,7 +110,7 @@ if ( !class_exists('DigXcel') ) {
       if( !array_key_exists('key', $parameters) )
         return false;
 
-      $keyParameter = $parameters['key'];
+      $keyParameter = hash('sha256', $parameters['key']);
 
       $pluginKey = get_option('digxcel_key');
 
