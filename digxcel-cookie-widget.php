@@ -40,12 +40,16 @@ if ( ! class_exists( 'DigxcelCookieWidget' ) ) {
 
     public function digxcel_insert_widget_script() {
       wp_enqueue_script( 'digxcel-cookie-widget', plugins_url( 'digxcel/assets/js/digxcel-cookie-widget.js' , dirname(__FILE__) ), array(), date("h:i:s") );
+      wp_enqueue_style( 'digxcel-cookie-style', plugins_url( 'digxcel/assets/css/digxcel-style.css' , dirname(__FILE__) ), array(), date("h:i:s") );
     }
 
     public function digxcel_toggle_http_cookies() {
       foreach($this->blocked_cookies as $key => $cookie) {
         unset( $_COOKIE[$cookie['name']] );
         setcookie($cookie['name'], null, strtotime('-1 day'), $cookie['path'], $cookie['domain'], false, true);
+        setcookie($cookie['name'], null, strtotime('-1 day'), $cookie['path'], $cookie['domain'], false, false);
+        setcookie($cookie['name'], null, strtotime('-1 day'), $cookie['path'], $cookie['domain'], true, true);
+        setcookie($cookie['name'], null, strtotime('-1 day'), $cookie['path'], $cookie['domain'], true, false);
       }
     }
 
