@@ -370,3 +370,19 @@ Sample Implementation:
   }
   add_filter( 'digxcel_automated_decisions_request', 'get_decisions_ds1', 2, 2);
 ```
+
+
+### Troubleshooting
+
+##### WPEngine
+
+The plugin relies on the 'digxcel-consents' cookie to be available on the backend when the site loads a page in order to be able to block http cookies.
+In the case of WPEngine, once a page is cached, the cookies are no longer available in the backend.
+For WPEngine installs it is necessary to contact WPEngine support and add a cache exclusion for this cookie.
+
+[More info here](https://wpengine.com/support/cookies-and-php-sessions/)
+
+##### Google Analytics
+
+When configuring Google Analytics cookies in the digXcel platform, it is necessary to set a 'source' value so that the plugin can effectively remove the Google Analytics code from the page
+before it is rendered. If the site uses Google Tag Manager then the source value should be set to 'tagmanager', otherwise it should be set to 'google-analytics'.
